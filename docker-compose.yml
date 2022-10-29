@@ -26,6 +26,11 @@ services:
             - ROUNDCUBEMAIL_DEFAULT_HOST=${MAIL_HOST}
             - ROUNDCUBEMAIL_SMTP_SERVER=${MAIL_HOST}
 
+    web:
+        build: webzone
+        env_file: .env
+        restart: unless-stopped
+
     nginx:
         image: nginx
         container_name: nginx
