@@ -26,8 +26,10 @@ services:
             - ROUNDCUBEMAIL_DEFAULT_HOST=${MAIL_HOST}
             - ROUNDCUBEMAIL_SMTP_SERVER=${MAIL_HOST}
 
-    web:
+    nginx:
         image: nginx
+        container_name: nginx
+        restart: unless-stopped
         depends_on:
             - roundcubemail
         volumes:
