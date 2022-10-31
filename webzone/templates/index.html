@@ -3,4 +3,13 @@
 
 Home Page
 
+<div>
+    <h4>Solar Arrays</h4>
+    <p>
+    {% for i in solar_arrays %}
+        Array {{ i.arrayID }} - {{ i.arrayVoltage * i.arrayCurrent }}W <br>
+    {% endfor %}
+    </p>
+</div>
+
 {% endblock %}

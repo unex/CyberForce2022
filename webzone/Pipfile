@@ -9,6 +9,8 @@ gunicorn = "*"
 uvicorn = "*"
 itsdangerous = "*"
 jinja2 = "*"
+sqlalchemy = "*"
+mysql-connector-python = "*"
 
 [dev-packages]
 

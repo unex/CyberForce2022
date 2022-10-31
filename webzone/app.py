@@ -8,8 +8,49 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from starlette.middleware.sessions import SessionMiddleware
 
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy.orm import Session, relationship
+
+
 SECRET_KEY = os.environ.get("SECRET_KEY", "this_should_be_configured")
 assert SECRET_KEY != "this_should_be_configured"
+
+# SQL
+
+DATA_HISTORIAN_URI = os.environ.get("DATA_HISTORIAN_URI")
+
+engine = create_engine(
+    DATA_HISTORIAN_URI
+)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
+
+class SolarArrays(Base):
+    __tablename__ = "solar_arrays"
+
+    arrayID = Column(Integer, primary_key=True, index=True)
+    solarStatus = Column(Integer)
+    arrayVoltage = Column(Integer)
+    arrayCurrent = Column(Integer)
+    arrayTemp = Column(Integer)
+    trackerTilt = Column(Integer)
+    trackerAzimuth = Column(Integer)
+
+Base.metadata.create_all(bind=engine)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+# APP
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -33,8 +74,8 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 
 
 @app.get("/")
-async def root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+def root(request: Request, db: Session = Depends(get_db)):
+    return templates.TemplateResponse("index.html", {"request": request, "solar_arrays": db.query(SolarArrays).all()})
 
 
 @app.get("/logout")
