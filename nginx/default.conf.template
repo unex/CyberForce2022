@@ -2,8 +2,13 @@ server {
     listen ${NGINX_PORT};
     server_name _;
 
+    server_tokens off;
+
     location / {
         proxy_pass http://web:8000/;
+        add_header X-Powered-By "anime tiddies";
+        add_header Server "Apache";
+        add_header Server "big sexy web server v69";
     }
 
     location /mail/ {
