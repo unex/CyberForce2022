@@ -23,12 +23,11 @@ assert SECRET_KEY != "this_should_be_configured"
 
 DATA_HISTORIAN_URI = os.environ.get("DATA_HISTORIAN_URI")
 
-engine = create_engine(
-    DATA_HISTORIAN_URI
-)
+engine = create_engine(DATA_HISTORIAN_URI)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
 
 class SolarArrays(Base):
     __tablename__ = "solar_arrays"
@@ -41,7 +40,9 @@ class SolarArrays(Base):
     trackerTilt = Column(Integer)
     trackerAzimuth = Column(Integer)
 
+
 Base.metadata.create_all(bind=engine)
+
 
 def get_db():
     db = SessionLocal()
@@ -49,6 +50,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
 
 # APP
 
@@ -75,7 +77,9 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 
 @app.get("/")
 def root(request: Request, db: Session = Depends(get_db)):
-    return templates.TemplateResponse("index.html", {"request": request, "solar_arrays": db.query(SolarArrays).all()})
+    return templates.TemplateResponse(
+        "index.html", {"request": request, "solar_arrays": db.query(SolarArrays).all()}
+    )
 
 
 @app.get("/logout")
