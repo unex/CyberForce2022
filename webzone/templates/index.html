@@ -1,15 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
 
-Home Page
+<!-- ======= Hero Section ======= -->
+<section id="hero" class="d-flex align-items-center">
+    <div class="container" data-aos="zoom-out" data-aos-delay="100">
+        <h1><span>SoleZonSolis</span></h1>
+        <h2>inspiriational text here</h2>
+    </div>
+</section><!-- End Hero -->
 
-<div>
-    <h4>Solar Arrays</h4>
-    <p>
-    {% for i in solar_arrays %}
-        Array {{ i.arrayID }} - {{ i.arrayVoltage * i.arrayCurrent }}W <br>
-    {% endfor %}
-    </p>
-</div>
+
+<main id="main">
+    <section class="section-bg">
+        <div class="container">
+            <div class="section-title">
+                <h3>Sonnenberg Fields</h3>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 pt-4 pt-lg-0 content d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="100">
+                    <p>
+                        {% for i in solar_arrays %}
+                        Array {{ i.arrayID }} - {{ i.arrayVoltage * i.arrayCurrent }}W <br>
+                        {% endfor %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
 
 {% endblock %}
