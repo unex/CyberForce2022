@@ -1,1 +1,29 @@
-header text
+{% macro nav_link(endpoint, name) %}
+    {% if url_for(endpoint).endswith(request.url.netloc + request.url.path) %}
+        <li><a class="nav-link active" href="{{ url_for(endpoint) }}">{{name}}</a></li>
+    {% else %}
+        <li><a class="nav-link" href="{{ url_for(endpoint) }}">{{name}}</a></li>
+    {% endif %}
+{% endmacro %}
+
+<!-- ======= Header ======= -->
+<header id="header" class="d-flex align-items-center">
+    <div class="container d-flex align-items-center justify-content-between">
+
+        <a class="logo" href="{{url_for('root')}}"><img src="assets/logo.svg"/></a>
+        <!-- Uncomment below if you prefer to use an image logo -->
+        <!-- <a href="index.html" class="logo"><img src="assets/img/logo.png" alt=""></a>-->
+
+        <nav id="navbar" class="navbar">
+            <ul>
+                {{ nav_link('root', 'Home') }}
+                {{ nav_link('contact', 'Contact Us') }}
+                {{ nav_link('manufacturing', 'Manufacturing') }}
+                {{ nav_link('generation', 'Solar Generation') }}
+                {{ nav_link('login', 'Login') }}
+            </ul>
+            <i class="bi bi-list mobile-nav-toggle"></i>
+        </nav><!-- .navbar -->
+
+    </div>
+</header><!-- End Header -->

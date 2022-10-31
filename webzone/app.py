@@ -53,7 +53,7 @@ def get_db():
 # APP
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 templates = Jinja2Templates(directory="templates")
 
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
@@ -79,26 +79,31 @@ def root(request: Request, db: Session = Depends(get_db)):
 
 
 @app.get("/logout")
-async def logout(request: Request):
+def logout(request: Request):
     request.session.clear()
     return RedirectResponse(app.url_path_for("root"))
 
 
 @app.get("/generation/")
-async def root(request: Request):
+def generation(request: Request):
     return templates.TemplateResponse("generation.html", {"request": request})
 
 
 @app.get("/contact/")
-async def root(request: Request):
+def contact(request: Request):
+    return templates.TemplateResponse("contact.html", {"request": request})
+
+
+@app.get("/manufacturing/")
+def manufacturing(request: Request):
     return templates.TemplateResponse("contact.html", {"request": request})
 
 
 @app.get("/admin/")
-async def root(request: Request):
+def admin(request: Request):
     return templates.TemplateResponse("admin.html", {"request": request})
 
 
 @app.get("/login/")
-async def root(request: Request):
+def login(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
