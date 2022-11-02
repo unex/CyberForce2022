@@ -63,9 +63,19 @@ def get_db():
 # Auth
 
 
+SERIALIZER = URLSafeSerializer(SECRET_KEY)
+
+
 def get_user(request: Request):
     if "user" in request.session:
         return SERIALIZER.loads(request.session["user"])
+
+
+def is_admin(request: Request, user=Depends(get_user)):
+    if user["admin"] != True:  # security 100
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+    return user
 
 
 # APP
@@ -75,14 +85,13 @@ app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 templates = Jinja2Templates(directory="templates")
 
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
-SERIALIZER = URLSafeSerializer(SECRET_KEY)
 
 
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
     return templates.TemplateResponse(
         "error.html",
-        {"request": request, "session": request.session, "exc": exc},
+        {"request": request, "exc": exc, "user": get_user(request)},
         status_code=exc.status_code,
     )
 
@@ -130,7 +139,7 @@ def manufacturing(request: Request, user: dict = Depends(get_user)):
 
 
 @app.get("/admin/")
-def admin(request: Request, user: dict = Depends(get_user)):
+def admin(request: Request, user: dict = Depends(is_admin)):
     return templates.TemplateResponse("admin.html", {"request": request, "user": user})
 
 
