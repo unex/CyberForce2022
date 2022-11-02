@@ -20,10 +20,26 @@
                 {{ nav_link('contact', 'Contact Us') }}
                 {{ nav_link('manufacturing', 'Manufacturing') }}
                 {{ nav_link('generation', 'Solar Generation') }}
+
+                {% if user %}
+                <li class="nav-link dropdown">
+                    <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ user.name }}
+                        <img src="/assets/img/userimg.png" alt="mdo" class="rounded-circle" width="32" height="32">
+                    </a>
+                    <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1" style="">
+                        <!-- <li><a class="dropdown-item" href="#">New project...</a></li>
+                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li><hr class="dropdown-divider"></li> -->
+                        <li><a class="dropdown-item" href="{{ url_for('logout') }}">Sign out</a></li>
+                    </ul>
+                </li>
+                {% else %}
                 {{ nav_link('login', 'Login') }}
+                {% endif %}
             </ul>
             <i class="bi bi-list mobile-nav-toggle"></i>
         </nav><!-- .navbar -->
-
     </div>
 </header><!-- End Header -->

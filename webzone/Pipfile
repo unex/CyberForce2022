@@ -11,6 +11,8 @@ itsdangerous = "*"
 jinja2 = "*"
 sqlalchemy = "*"
 mysql-connector-python = "*"
+python-ldap = "*"
+python-multipart = "*"
 
 [dev-packages]
 

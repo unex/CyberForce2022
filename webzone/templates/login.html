@@ -1,6 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
 
-Login Page
+<main id="main">
+    <section class="section-bg">
+        <div class="container">
+            <div class="section-title">
+                <h3>Login</span></h3>
+            </div>
+            <form method="post">
+                <input type="text" placeholder="Enter Username" name="u" required>
+                <input type="password" placeholder="Enter Password" name="p" required>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </section>
+</main>
 
 {% endblock %}
