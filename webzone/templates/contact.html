@@ -7,18 +7,38 @@
             <div class="section-title">
                 <h3>Contact Us</span></h3>
             </div>
-            <form enctype="multipart/form-data" method="post">
-                <input type="text" placeholder="Name" name="name" required>
-                <input type="email" placeholder="Email" name="email" required>
-                <input type="tel" placeholder="Phone" name="phone" required>
-                <input name="file" type="file">
-                <button type="submit">Submit</button>
-            </form>
+            <div class="row">
+                <div class="col-6 mx-auto">
+                    <form enctype="multipart/form-data" method="post">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input class="form-control"  type="text" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input class="form-control"  type="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input class="form-control"  type="tel" name="phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="file" class="form-label">File</label>
+                            <input class="form-control"  name="file" type="file">
+                        </div>
+                        <div class="d-grid mb-3">
+                            <button class="btn btn-primary" type="submit">Submit</button>
+                        </div>
 
-            {% if message %}
-            {{message | safe}}
-            {% endif %}
-        </div>
+                        {% if message %}
+                        <div class="mb-3">
+                        {{message | safe}}
+                        </div>
+                        {% endif %}
+                    </div>
+                    </form>
+                </div>
+            </div>
     </section>
 </main>
 
