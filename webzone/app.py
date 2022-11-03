@@ -214,7 +214,7 @@ def submit_contact(
 @app.get("/manufacturing/")
 def manufacturing(request: Request, user: dict = Depends(get_user)):
     return templates.TemplateResponse(
-        "contact.html", {"request": request, "user": user}
+        "manufacturing.html", {"request": request, "user": user}
     )
 
 
