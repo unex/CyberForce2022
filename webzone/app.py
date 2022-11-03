@@ -72,9 +72,10 @@ templates = Jinja2Templates(directory="templates")
 
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
+
 @app.on_event("startup")
 def on_startup():
-    engine = create_engine(DATA_HISTORIAN_URI, connect_args={'connect_timeout': 10})
+    engine = create_engine(DATA_HISTORIAN_URI, connect_args={"connect_timeout": 10})
     app.sql = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
     Base.metadata.create_all(bind=engine)
