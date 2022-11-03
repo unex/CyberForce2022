@@ -251,6 +251,8 @@ def admin(request: Request, user: dict = Depends(is_admin)):
     mmm.close()
     mmm.logout()
 
+    emails.reverse()
+
     return templates.TemplateResponse(
         "admin.html", {"request": request, "user": user, "files": files, "emails": emails}
     )
