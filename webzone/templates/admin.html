@@ -12,6 +12,21 @@
                 <li>{{ file }} <a href="{{ url_for('admin_file', file=file | b64) }}">download</a></li>
             {% endfor %}
             </ul>
+
+            <div class="section-title">
+                <h3>Emails</h3>
+            </div>
+            {% for email in emails %}
+            <div class="row py-2">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <pre>{{ email }}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
     </section>
 </main>
