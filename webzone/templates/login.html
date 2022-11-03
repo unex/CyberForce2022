@@ -7,11 +7,23 @@
             <div class="section-title">
                 <h3>Login</span></h3>
             </div>
-            <form method="post">
-                <input type="text" placeholder="Enter Username" name="u" required>
-                <input type="password" placeholder="Enter Password" name="p" required>
-                <button type="submit">Login</button>
-            </form>
+            <div class="row">
+                <div class="col-6 mx-auto">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label for="u" class="form-label">Username</label>
+                            <input class="form-control" type="text" name="u" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="p" class="form-label">Password</label>
+                            <input class="form-control" type="password" name="p" required>
+                        </div>
+                        <div class="d-grid">
+                            <button class="btn btn-primary" type="submit">Login</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </section>
 </main>
