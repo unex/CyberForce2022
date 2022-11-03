@@ -31,9 +31,6 @@ DATA_HISTORIAN_URI = os.environ.get("DATA_HISTORIAN_URI")
 # LDAP
 LDAP_URI = os.environ.get("LDAP_URI")
 
-engine = create_engine(DATA_HISTORIAN_URI)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
 Base = declarative_base()
 
 
@@ -47,17 +44,6 @@ class SolarArrays(Base):
     arrayTemp = Column(Integer)
     trackerTilt = Column(Integer)
     trackerAzimuth = Column(Integer)
-
-
-Base.metadata.create_all(bind=engine)
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 # Auth
@@ -85,6 +71,21 @@ app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 templates = Jinja2Templates(directory="templates")
 
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
+
+@app.on_event("startup")
+def on_startup():
+    engine = create_engine(DATA_HISTORIAN_URI, connect_args={'connect_timeout': 10})
+    app.sql = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+    Base.metadata.create_all(bind=engine)
+
+
+def get_db():
+    db = app.sql()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 @app.exception_handler(StarletteHTTPException)
