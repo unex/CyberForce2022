@@ -1,11 +1,13 @@
 import os
 import asyncio
-from typing import final
+from base64 import urlsafe_b64encode, urlsafe_b64decode
+from io import BytesIO
+
 
 from fastapi import FastAPI, Request, Depends, HTTPException, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi.responses import RedirectResponse, JSONResponse, StreamingResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from starlette.middleware.sessions import SessionMiddleware
@@ -20,6 +22,8 @@ from sqlalchemy.orm import Session, relationship
 
 import ldap
 
+from ftplib import FTP
+
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "this_should_be_configured")
 assert SECRET_KEY != "this_should_be_configured"
@@ -30,6 +34,10 @@ DATA_HISTORIAN_URI = os.environ.get("DATA_HISTORIAN_URI")
 
 # LDAP
 LDAP_URI = os.environ.get("LDAP_URI")
+
+# FTP
+FTP_URI = os.environ.get("FTP_URI")
+
 
 Base = declarative_base()
 
@@ -69,6 +77,7 @@ def is_admin(request: Request, user=Depends(get_user)):
 app = FastAPI()
 app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 templates = Jinja2Templates(directory="templates")
+templates.env.filters["b64"] = lambda s: urlsafe_b64encode(s.encode()).decode()
 
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
@@ -140,9 +149,45 @@ def manufacturing(request: Request, user: dict = Depends(get_user)):
     )
 
 
+def connect_ftp():
+    u, p = (
+        FTP_URI.replace("ftp://", "").split("@")[0].split(":")
+    )  # WHY DO I HAVE TO DO THIS MYSELF
+    addr = FTP_URI.split("@")[1]
+
+    return FTP(addr, u, p)
+
+
 @app.get("/admin/")
 def admin(request: Request, user: dict = Depends(is_admin)):
-    return templates.TemplateResponse("admin.html", {"request": request, "user": user})
+    files = []
+
+    with connect_ftp() as ftp:
+        ftp.retrlines(
+            "NLST", lambda file: files.append(file)  # callbacks what year is it
+        )
+
+    return templates.TemplateResponse(
+        "admin.html", {"request": request, "user": user, "files": files}
+    )
+
+
+@app.get("/admin/file/{file}")
+def admin_file(request: Request, file: str, user: dict = Depends(is_admin)):
+    fname = urlsafe_b64decode(
+        file
+    ).decode()  # not a security feature, just makes the urls less dumb
+
+    fp = BytesIO()
+
+    with connect_ftp() as ftp:
+        ftp.retrbinary(f"RETR {fname}", fp.write)
+
+    fp.seek(0)
+
+    return StreamingResponse(
+        fp, headers={"Content-Disposition": f'attachment; filename="{fname}"'}
+    )  # can't believe this works
 
 
 @app.get("/login/")
