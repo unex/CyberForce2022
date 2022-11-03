@@ -1,6 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
 
-Contact Page
+<main id="main">
+    <section class="section-bg">
+        <div class="container">
+            <div class="section-title">
+                <h3>Contact Us</span></h3>
+            </div>
+            <form enctype="multipart/form-data" method="post">
+                <input type="text" placeholder="Name" name="name" required>
+                <input type="email" placeholder="Email" name="email" required>
+                <input type="tel" placeholder="Phone" name="phone" required>
+                <input name="file" type="file">
+                <button type="submit">Submit</button>
+            </form>
+
+            {% if message %}
+            {{message | safe}}
+            {% endif %}
+        </div>
+    </section>
+</main>
 
 {% endblock %}

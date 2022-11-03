@@ -2,9 +2,21 @@ import os
 import asyncio
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 from io import BytesIO
+from datetime import datetime
+import smtplib
+from typing import Optional
 
 
-from fastapi import FastAPI, Request, Depends, HTTPException, status
+from fastapi import (
+    FastAPI,
+    Request,
+    Depends,
+    HTTPException,
+    Form,
+    File,
+    UploadFile,
+    status,
+)
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse, JSONResponse, StreamingResponse
@@ -23,6 +35,9 @@ from sqlalchemy.orm import Session, relationship
 import ldap
 
 from ftplib import FTP
+from smtplib import SMTP
+from imaplib import IMAP4
+from email.message import EmailMessage
 
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "this_should_be_configured")
@@ -37,6 +52,9 @@ LDAP_URI = os.environ.get("LDAP_URI")
 
 # FTP
 FTP_URI = os.environ.get("FTP_URI")
+
+# EMAIL
+MAILMAN_URI, MAILMAIN_USER, MAILMAN_PASS = os.environ.get("MAILMAN").split(",")
 
 
 Base = declarative_base()
@@ -142,6 +160,57 @@ def contact(request: Request, user: dict = Depends(get_user)):
     )
 
 
+@app.post("/contact/")
+def submit_contact(
+    request: Request,
+    user: dict = Depends(get_user),
+    name: str = Form(),
+    email: str = Form(),
+    phone: str = Form(),
+    file: Optional[UploadFile] = None,
+):
+    message = [
+        "New contact page submission",
+        "---------------------------",
+        "",
+        f"Name: {name}",
+        f"Email: {email}",
+        f"Phone: {phone}",
+        "",
+    ]
+
+    if file:
+        filename = f"{datetime.utcnow().strftime('%b-%d-%Y_%H%M%S')}_{file.filename}"
+
+        # upload the file file to the file fileserver
+        with connect_ftp() as ftp:
+            ftp.storbinary(f"STOR {filename}", file.file)
+
+        message.append(f"Uploaded file: {filename}")
+
+    # send an email
+    mailboi = SMTP(MAILMAN_URI)
+    mailboi.login(MAILMAIN_USER, MAILMAN_PASS)
+
+    msg = EmailMessage()
+    msg.set_content("\n".join(message))
+    msg['subject'] = "New contact page submission"
+    msg['to'] = MAILMAIN_USER
+    msg['from'] = "noreply@sunpartners.local"
+
+    mailboi.send_message(msg)
+    mailboi.quit()
+
+    return templates.TemplateResponse(
+        "contact.html",
+        {
+            "request": request,
+            "user": user,
+            "message": '<div class="alert alert-success" role="alert">Success!</div>',
+        },
+    )
+
+
 @app.get("/manufacturing/")
 def manufacturing(request: Request, user: dict = Depends(get_user)):
     return templates.TemplateResponse(
@@ -167,8 +236,23 @@ def admin(request: Request, user: dict = Depends(is_admin)):
             "NLST", lambda file: files.append(file)  # callbacks what year is it
         )
 
+    emails = []
+
+    mmm = IMAP4(MAILMAN_URI)
+    mmm.login(MAILMAIN_USER, MAILMAN_PASS)
+    mmm.select()
+
+    typ, data = mmm.search(None, 'ALL')
+
+    for num in data[0].split():
+        typ, data = mmm.fetch(num, '(RFC822)')
+        emails.append(data[0][1].decode())
+
+    mmm.close()
+    mmm.logout()
+
     return templates.TemplateResponse(
-        "admin.html", {"request": request, "user": user, "files": files}
+        "admin.html", {"request": request, "user": user, "files": files, "emails": emails}
     )
 
 
