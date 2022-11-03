@@ -11,19 +11,24 @@
 
 
 <main id="main">
-    <section class="section-bg">
+    <section class="section-bg skills">
         <div class="container">
             <div class="section-title">
                 <h3>Sonnenberg Fields</h3>
             </div>
-            <div class="row">
-                <div class="col-lg-6 pt-4 pt-lg-0 content d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="100">
-                    <p>
-                        {% for i in solar_arrays %}
-                        Array {{ i.arrayID }} - {{ i.arrayVoltage * i.arrayCurrent }}W <br>
-                        {% endfor %}
-                    </p>
+
+            <div class="row row-cols-2 skills-content">
+                {% for i in solar_arrays %}
+                <div class="col">
+                    <div class="progress">
+                        <span class="skill">Array {{ i.arrayID }}<i class="val">{{ i.arrayVoltage * i.arrayCurrent }}W</i></span>
+                        <div class="progress-bar-wrap">
+                            <!-- They said the arrays produce 14000kW/h so these should never go above 2300 in theory -->
+                            <div class="progress-bar" role="progressbar" aria-valuenow="{{ i.arrayVoltage * i.arrayCurrent }}" aria-valuemin="0" aria-valuemax="2300"></div>
+                        </div>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
         </div>
     </section>
