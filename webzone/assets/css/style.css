@@ -1724,7 +1724,7 @@ section {
 
 #footer .footer-top .footer-contact h3 {
   font-size: 24px;
-  margin: 0 0 15px 0;
+  margin: 0;
   padding: 2px 0 2px 0;
   line-height: 1;
   font-weight: 700;
@@ -1740,6 +1740,18 @@ section {
   margin-bottom: 0;
   font-family: "Roboto", sans-serif;
   color: #777777;
+}
+
+#footer .footer-top .footer-contact i.val {
+  padding: 0;
+  margin: 0 0 6px 0;
+  text-transform: uppercase;
+  display: block;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  font-size: 10px;
+  font-style: normal;
+  color: #222222;
 }
 
 #footer .footer-top h4 {
