@@ -16,6 +16,18 @@ server {
         add_header Server "big sexy web server v69";
     }
 
+    # https://stackoverflow.com/questions/46181930/nginx-infinte-redirection-for-kibana-on-centos-7
+    location /kibana/ {
+        rewrite /kibana/(.*) /$1 break;
+        proxy_pass http://kibana:5601/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+
     location /mail/ {
         index index.php index.html;
         root /var/www/html;
