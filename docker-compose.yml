@@ -40,6 +40,7 @@ services:
         environment:
             - SERVER_BASEPATH="/kibana"
             - KIBANA_FLEET_SETUP='1'
+            - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${KIBANA_ENC:-}
             - ELASTICSEARCH_HOSTS=${ELASTICSEARCH_HOSTS:-}
             - ELASTICSEARCH_USERNAME=kibana_system
             - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD:-}
