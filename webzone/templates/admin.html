@@ -7,12 +7,15 @@
             <div class="section-title">
                 <h3>Files</h3>
             </div>
-            <ul>
+            <ul class="list-group">
             {% for file in files %}
-                <li>{{ file }} <a href="{{ url_for('admin_file', file=file | b64) }}">download</a></li>
+                <li class="list-group-item">{{ file }} <a class="btn btn-outline-primary btn-sm" href="{{ url_for('admin_file', file=file | b64) }}">DOWNLOAD</a></li>
             {% endfor %}
             </ul>
-
+        </div>
+    </section>
+    <section class="section-bg">
+        <div class="container">
             <div class="section-title">
                 <h3>Emails</h3>
             </div>
